@@ -189,6 +189,7 @@ function draw() {
     pipes.forEach(pipe => pipe.draw());
 }
 
+let speed = 100;
 function gameLoop() {
     if (gameOver) {
         document.getElementById('restart').style.display = 'block';
@@ -197,7 +198,7 @@ function gameLoop() {
 
     updateGame();
     draw();
-    requestAnimationFrame(gameLoop);
+    setTimeout(gameLoop, speed);
 }
 
 function startGame() {
