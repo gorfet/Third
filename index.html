@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flappy Camille</title>
+    <title>Flappy Bird with Image</title>
     <style>
         * {
             margin: 0;
@@ -55,7 +55,7 @@ let gameStarted = false;
 
 // Bird image (SVG data URL)
 const birdImg = new Image();
-birdImg.src = 'cams.jpg';
+birdImg.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAgMTBjLTE1IDAtMjUgMTAtMjUgMjVzMTAgMjUgMjUgMjUgMjUtMTAgMjUtMjVTNjUgMTAgNTAgMTB6bTAgNDBjLTEwIDAtMTUgNS0xNSAxNXM1IDE1IDE1IDE1IDE1LTUgMTUtMTUtNS0xNS0xNS0xNXpNMzUgNjVsLTE1LTE1IDE1LTE1IDE1IDE1em0zMCAwbDE1LTE1LTE1LTE1LTE1IDE1eiIgZmlsbD0iI2ZmZGMwMCIvPjwvc3ZnPg==';
 
 // Screen size adjustment
 function resizeCanvas() {
@@ -80,7 +80,7 @@ const bird = {
 const pipes = [];
 const pipeWidth = 60;
 const pipeGap = 200;
-const pipeSpacing = 150;
+const pipeSpacing = 100;
 let pipeTimer = 0;
 let gameOver = false;
 
@@ -189,7 +189,6 @@ function draw() {
     pipes.forEach(pipe => pipe.draw());
 }
 
-let speed = 100;
 function gameLoop() {
     if (gameOver) {
         document.getElementById('restart').style.display = 'block';
@@ -198,7 +197,7 @@ function gameLoop() {
 
     updateGame();
     draw();
-    setTimeout(gameLoop, speed);
+    requestAnimationFrame(gameLoop);
 }
 
 function startGame() {
