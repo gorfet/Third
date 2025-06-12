@@ -1,226 +1,331 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flappy Bird with Image</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            touch-action: manipulation;
-        }
-        body {
-            overflow: hidden;
-            background: #4EC0CA;
-        }
-        #gameCanvas {
-            touch-action: none;
-        }
-        #score {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 40px;
-            font-family: Arial;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            z-index: 100;
-        }
-        #restart {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            font-size: 24px;
-            background: #FFD700;
-            border: none;
-            border-radius: 10px;
-            display: none;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <div id="score">0</div>
-    <canvas id="gameCanvas"></canvas>
-    <button id="restart" onclick="startGame()">Restart</button>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Labyrinth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body class="bg-black text-white">
+    <!-- Home Screen -->
+    <div
+      id="homeScreen"
+      class="home-screen flex flex-col items-center justify-center"
+    >
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div id="particleContainer" class="w-full h-full"></div>
+      </div>
+      <div class=" bg-[url(labyrinth.png)] flex items-center w-64 h-24 bg-cover">
+      </div>
+      <div class="bg-[url(icon.jpg)] bg-cover lg:w-64 lg:h-64 w-64 h-64 relative mb-8 z-10">
+        <svg class="w-full h-full" viewBox="0 0 100 100">
+          <!-- Maze background -->
+          <defs>
+            <radialGradient
+              id="mazeGradient"
+              cx="50%"
+              cy="50%"
+              r="50%"
+              fx="50%"
+              fy="50%"
+            >
+              <stop offset="0%" stop-color="#16213e" />
+              <stop offset="100%" stop-color="#0f0f0f" />
+            </radialGradient>
+          </defs>
+          
+          <!-- Character -->
+          <circle id="homeCharacter" cx="15" cy="15" r="5" fill="#00ccff">
+            <animate
+              attributeName="opacity"
+              values="0.7;1;0.7"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </circle>
 
-<script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-let score = 0;
-let gameStarted = false;
+          <!-- Monster -->
+          <circle id="homeMonster" cx="85" cy="85" r="5" fill="#ff3333">
+            <animate
+              attributeName="opacity"
+              values="0.7;1;0.7"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        </svg>
+      </div>
+      <div class="flex flex-col items-center z-10">
+        <button
+          id="startBtn"
+          class="flex justify-center items-center bg-[url(start.png)] bg-cover w-36 h-24 rounded-full"
+        >
 
-// Bird image (SVG data URL)
-const birdImg = new Image();
-birdImg.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAgMTBjLTE1IDAtMjUgMTAtMjUgMjVzMTAgMjUgMjUgMjUgMjUtMTAgMjUtMjVTNjUgMTAgNTAgMTB6bTAgNDBjLTEwIDAtMTUgNS0xNSAxNXM1IDE1IDE1IDE1IDE1LTUgMTUtMTUtNS0xNS0xNS0xNXpNMzUgNjVsLTE1LTE1IDE1LTE1IDE1IDE1em0zMCAwbDE1LTE1LTE1LTE1LTE1IDE1eiIgZmlsbD0iI2ZmZGMwMCIvPjwvc3ZnPg==';
+        </button>
+        <button
+          id="howToPlayBtn"
+          class="flex justify-center items-center bg-[url(credits.png)] bg-cover w-36 h-24 rounded-full"
+        >
+        </button>
+        <div class="text-center max-w-md px-4">
+          <p class="mb-2 text-gray-300">
+           
+          </p>
+          <p class="text-sm text-gray-400">
+            Use arrow keys or WASD controls to move.
+          </p>
+        </div>
+      </div>
+    </div>
 
-// Screen size adjustment
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+   
 
-// Game variables
-const bird = {
-    x: canvas.width / 4,
-    y: canvas.height / 2,
-    width: 40,
-    height: 30,
-    velocity: 0,
-    gravity: 0.5,
-    jump: -8,
-    rotation: 0
-};
+<!-- Credits -->
+<div
+  id="howToPlayScreen"
+  class="home-screen flex flex-col lg:flex-row items-center justify-center gap-4 p-4"
+  style="display: none"
+>
+  <!-- Box -->
+  <div class="bg-gray-900 bg-opacity-70 p-6 rounded-lg w-full max-w-md h-[400px] overflow-y-auto">
+    <ul class="list-disc pl-5 space-y-3 text-white text-sm sm:text-base">
+      <li>
+        <span class="text-pink-400">Game Design & Development:</span>
+        <ul class="list-none pl-0">
+          <li class="mt-2">Krystyl Kaye Guevarra – Lead Developer / Graphic</li>
+          <li class="mt-2">Dave Postrero – Fullstack Developer</li>
+          <li class="mt-2">Julliene Valerie Sierra – Documentation</li>
+          <li class="mt-2">Russell Padon – Testing and Debugging</li>
+        </ul>
+      </li>
+      <li>
+        <span class="text-pink-400">Technologies Used:</span>
+        <ul class="list-none pl-0">
+          <li class="mt-2">HTML5</li>
+          <li class="mt-2">CSS3</li>
+          <li class="mt-2">JavaScript</li>
+        </ul>
+      </li>
+      <li>
+        <span class="text-pink-400">Institution:</span>
+        <ul class="list-none pl-0">
+          <li class="mt-2">STI West Negros University</li>
+          <li class="mt-2">BS in Information Technology</li>
+          <li class="mt-2">Course: Web Systems and Technologies</li>
+          <li class="mt-2">Instructor: Klent John Juaniza</li>
+        </ul>
+      </li>
+      <li>
+        <span class="text-pink-400">Assets and Design:</span>
+        <ul class="list-none pl-0">
+          <li class="mt-2">Game Icons & Sprites – Custom Designed</li>
+        </ul>
+      </li>
+      <li>
+        <span class="text-pink-400">Special Thanks:</span>
+        <p class="mt-2">
+          Our instructor, for the guidance, support, and the opportunity to expand our skills through this project.<br />
+          Our groupmates, for the teamwork and cooperation in completing this game.
+        </p>
+      </li>
+      <li>
+        <span class="text-pink-400">About the Game:</span>
+        <p class="mt-2">
+          <strong>Labyrinth</strong> is a challenging roguelike adventure where you explore procedurally generated floors. Each floor becomes more difficult with more traps and larger mazes. Can you reach the top?
+        </p>
+      </li>
+    </ul>
+  </div>
 
-const pipes = [];
-const pipeWidth = 60;
-const pipeGap = 200;
-const pipeSpacing = 100;
-let pipeTimer = 0;
-let gameOver = false;
+  <!-- Back Button -->
+  <button
+    id="backBtn"
+    class="btn bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full text-lg mt-6"
+  >
+    BACK
+  </button>
+</div>
+<!-- Credits -->
+<div id="credits"></div>
 
-// Touch controls
-document.addEventListener('touchstart', handleJump);
-document.addEventListener('mousedown', handleJump);
 
-function handleJump() {
-    if (!gameStarted) {
-        gameStarted = true;
-        gameLoop();
-    }
-    if (!gameOver) {
-        bird.velocity = bird.jump;
-    }
-}
 
-// Pipe class
-class Pipe {
-    constructor() {
-        this.x = canvas.width;
-        this.topHeight = Math.random() * (canvas.height - pipeGap - 100) + 50;
-        this.bottomY = this.topHeight + pipeGap;
-        this.scored = false;
-    }
 
-    draw() {
-        ctx.fillStyle = '#73BF2E';
-        // Top pipe
-        ctx.fillRect(this.x, 0, pipeWidth, this.topHeight);
-        // Bottom pipe
-        ctx.fillRect(this.x, this.bottomY, pipeWidth, canvas.height - this.bottomY);
-    }
+    <!-- Game Container -->
+    <div id="gameContainer" class="game-container hidden">
+      <div id="maze" class="maze"></div>
 
-    update() {
-        this.x -= 2;
-        this.draw();
+      <!-- Game UI -->
+      <div class="game-ui">
+        <div class="flex justify-between items-center">
+          <div class="bg-black bg-opacity-70 p-2 rounded-lg flex items-center">
+            <div class="mr-4">
+              <span class="text-sm game-font">FLOOR</span>
+              <span id="floorLevel" class="ml-2 font-bold game-font">1</span>
+            </div>
+            <div>
+              <span class="text-sm game-font">SCORE</span>
+              <span id="scoreValue" class="ml-2 font-bold game-font">0</span>
+            </div>
+          </div>
+          <div class="flex">
+            <div
+              id="mapBtn"
+              class="btn bg-black bg-opacity-70 p-2 rounded-lg mr-2 pointer-events-auto"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                />
+              </svg>
+            </div>
+            <div
+              id="pauseBtn"
+              class="btn bg-black bg-opacity-70 p-2 rounded-lg pointer-events-auto"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-        // Collision detection
-        const birdLeft = bird.x - bird.width/2;
-        const birdRight = bird.x + bird.width/2;
-        const birdTop = bird.y - bird.height/2;
-        const birdBottom = bird.y + bird.height/2;
+        <!-- Power-up indicator -->
+        <div
+          id="powerupIndicator"
+          class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-4 py-2 rounded-full hidden"
+        >
+          <div class="flex items-center">
+            <div
+              id="powerupIcon"
+              class="w-6 h-6 mr-2 rounded-full bg-yellow-500"
+            ></div>
+            <span id="powerupName" class="mr-2 game-font">Speed Boost</span>
+            <div class="progress-container w-24">
+              <div
+                id="powerupProgress"
+                class="progress-bar"
+                style="width: 100%"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        if (birdRight > this.x && 
-            birdLeft < this.x + pipeWidth && 
-            (birdTop < this.topHeight || 
-             birdBottom > this.bottomY)) {
-            gameOver = true;
-        }
+      <!-- Mini-map -->
+      <div id="miniMap" class="mini-map">
+        <div id="miniMapContent" class="mini-map-content"></div>
+      </div>
 
-        // Score counting
-        if (!this.scored && bird.x > this.x + pipeWidth) {
-            score++;
-            document.getElementById('score').textContent = score;
-            this.scored = true;
-        }
-    }
-}
+      <!-- Notification -->
+      <div id="notification" class="notification"></div>
 
-function createPipes() {
-    pipeTimer++;
-    if (pipeTimer > pipeSpacing) {
-        pipes.push(new Pipe());
-        pipeTimer = 0;
-    }
-}
+      <!-- Mobile Controls -->
+        <div class="controls">
+            <div class="directional-controls">
+                <div class="control-btn" id="upBtn">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="control-btn" id="leftBtn">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="control-btn" id="rightBtn">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="control-btn" id="downBtn">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+            </div>
+        </div>
 
-function updateGame() {
-    // Bird physics
-    bird.velocity += bird.gravity;
-    bird.y += bird.velocity;
-    
-    // Rotation based on velocity
-    bird.rotation = Math.max(-25, Math.min(25, bird.velocity * 3));
+      <!-- Game Over Screen -->
+      <div id="gameOver" class="game-over">
+        <h2 class="title text-4xl text-red-500 mb-4">GAME OVER</h2>
+        <p class="mb-2">You reached floor <span id="finalFloor">1</span></p>
+        <p class="mb-6">Final score: <span id="finalScore">0</span></p>
+        <button
+          id="restartBtn"
+          class="btn bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full mb-4"
+        >
+          TRY AGAIN
+        </button>
+        <button
+          id="menuBtn"
+          class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full"
+        >
+          MAIN MENU
+        </button>
+      </div>
 
-    // Boundary check
-    if (bird.y + bird.height/2 > canvas.height || bird.y - bird.height/2 < 0) {
-        gameOver = true;
-    }
+      <!-- Level Complete Screen -->
+      <div id="levelComplete" class="level-complete">
+        <h2 class="title text-4xl text-green-500 mb-4">FLOOR CLEARED!</h2>
+        <p class="mb-2">Descending to floor <span id="nextFloor">2</span></p>
+        <p class="mb-6">Current score: <span id="currentScore">0</span></p>
+        <div class="w-16 h-16 relative">
+          <svg class="animate-spin" viewBox="0 0 24 24">
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+              fill="none"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>
+      </div>
 
-    // Update pipes
-    createPipes();
-    pipes.forEach((pipe, index) => {
-        pipe.update();
-        if (pipe.x + pipeWidth < 0) {
-            pipes.splice(index, 1);
-        }
-    });
-}
-
-function drawBird() {
-    ctx.save();
-    ctx.translate(bird.x, bird.y);
-    ctx.rotate(bird.rotation * Math.PI / 180);
-    ctx.drawImage(birdImg, -bird.width/2, -bird.height/2, bird.width, bird.height);
-    ctx.restore();
-}
-
-function draw() {
-    // Clear canvas
-    ctx.fillStyle = '#4EC0CA';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    drawBird();
-    pipes.forEach(pipe => pipe.draw());
-}
-
-function gameLoop() {
-    if (gameOver) {
-        document.getElementById('restart').style.display = 'block';
-        return;
-    }
-
-    updateGame();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
-
-function startGame() {
-    // Reset game state
-    bird.y = canvas.height / 2;
-    bird.velocity = 0;
-    bird.rotation = 0;
-    pipes.length = 0;
-    score = 0;
-    pipeTimer = 0;
-    gameOver = false;
-    gameStarted = false;
-    document.getElementById('score').textContent = '0';
-    document.getElementById('restart').style.display = 'none';
-    
-    if (!gameStarted) {
-        gameStarted = true;
-        gameLoop();
-    }
-}
-
-// Initial game start
-startGame();
-</script>
-</body>
+      <!-- Pause Screen -->
+      <div id="pauseScreen" class="pause-screen">
+        <h2 class="title text-4xl text-blue-500 mb-6">GAME PAUSED</h2>
+        <button
+          id="resumeBtn"
+          class="btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full mb-4"
+        >
+          RESUME
+        </button>
+        <button
+          id="restartFromPauseBtn"
+          class="btn bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-full mb-4"
+        >
+          RESTART
+        </button>
+        <button
+          id="quitBtn"
+          class="btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full"
+        >
+          QUIT
+        </button>
+      </div>
+    </div>
+   <script src="script.js"></script>
+  </body>
 </html>
