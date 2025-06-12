@@ -1,0 +1,457 @@
+
+      @import url("https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap");
+
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: "Roboto", sans-serif;
+        background-color: #000;
+      }
+
+      .title {
+        font-family: "Creepster", cursive;
+        text-shadow: 2px 2px 8px rgba(255, 0, 0, 0.6);
+      }
+
+      .game-font {
+        font-family: "Orbitron", sans-serif;
+      }
+
+      .home-screen {
+        background: url("background.jpg") no-repeat center center/cover;
+        height: 100vh;
+        width: 100vw;
+        position: absolute;
+        z-index: 100;
+        transition: opacity 1s ease-in-out;
+      }
+
+      .game-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: url("background.jpg") no-repeat center center/cover;
+      }
+
+      .maze {
+        position: relative;
+        margin: 0 auto;
+        transition: transform 0.5s ease-out;
+      }
+
+      .cell {
+        position: absolute;
+        box-sizing: border-box;
+        transition: background-color 0.3s ease;
+      }
+
+      .wall {
+        background-color: #333;
+        border: 1px solid #444;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+      }
+
+      .path {
+        background-color: #111;
+        border: 1px solid #222;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+      }
+
+      .fog {
+        background-color: #000;
+        position: absolute;
+        z-index: 2;
+        transition: opacity 0.5s ease;
+      }
+      .fog.revealed {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .player {
+        position: absolute;
+        z-index: 5;
+        transition: all 0.2s ease;
+        filter: drop-shadow(0 0 10px rgba(0, 200, 255, 0.8));
+      }
+
+      .monster {
+        position: absolute;
+        z-index: 4;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+      }
+
+      .trap {
+        position: absolute;
+        z-index: 3;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 87, 34, 0.7) 0%,
+          rgba(0, 0, 0, 0) 70%
+        );
+        animation: pulse-trap 3s infinite;
+      }
+
+      .exit {
+        position: absolute;
+        z-index: 3;
+        background: radial-gradient(
+          circle,
+          rgba(0, 255, 0, 0.7) 0%,
+          rgba(0, 0, 0, 0) 70%
+        );
+        border-radius: 50%;
+        animation: pulse-exit 2s infinite;
+      }
+
+      .powerup {
+        position: absolute;
+        z-index: 3;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 215, 0, 0.7) 0%,
+          rgba(0, 0, 0, 0) 70%
+        );
+        animation: pulse-powerup 2s infinite;
+      }
+
+      .game-ui {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+    .controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .directional-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 5px;
+        width: 150px;
+        height: 150px;
+    }
+
+            /* Control buttons */
+      .control-btn {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        color: white;
+        margin: 5px;
+        user-select: none;
+        pointer-events: auto;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+        transition: all 0.2s ease;
+      }
+
+      .control-btn:active, .control-btn.active {
+        background-color: rgba(0, 200, 255, 0.4);
+        transform: scale(0.95);
+      }
+
+      /* Hover effect for desktop */
+      @media (hover: hover) {
+        .control-btn:hover {
+          background-color: rgba(0, 200, 255, 0.3);
+        }
+      }
+
+      /* Directional controls grid */
+      .directional-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 5px;
+        width: 150px;
+        height: 150px;
+      }
+
+      #upBtn {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      
+      #leftBtn {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      
+      #rightBtn {
+        grid-column: 3;
+        grid-row: 2;
+      }
+      
+      #downBtn {
+        grid-column: 2;
+        grid-row: 3;
+      }
+
+      .game-over,
+      .level-complete,
+      .pause-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 20;
+        display: none;
+        backdrop-filter: blur(5px);
+      }
+
+      .btn {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .btn:hover:before {
+        left: 100%;
+      }
+
+      .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0, 200, 255, 0.7);
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 8px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        margin-top: 5px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background-color: #00ccff;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .mini-map {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 150px;
+        height: 150px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 2px solid #333;
+        border-radius: 5px;
+        z-index: 10;
+        overflow: hidden;
+        display: none;
+      }
+
+      .mini-map-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .mini-map-cell {
+        position: absolute;
+        box-sizing: border-box;
+      }
+
+      .mini-map-wall {
+        background-color: #555;
+      }
+
+      .mini-map-path {
+        background-color: #222;
+      }
+
+      .mini-map-player {
+        background-color: #00ccff;
+        border-radius: 50%;
+        z-index: 2;
+      }
+
+      .mini-map-monster {
+        background-color: #ff3333;
+        border-radius: 50%;
+        z-index: 1;
+      }
+
+      .mini-map-exit {
+        background-color: #00ff00;
+        border-radius: 50%;
+        z-index: 1;
+      }
+
+      .stats {
+        position: absolute;
+        top: 60px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        padding: 10px;
+        color: white;
+        font-size: 14px;
+        z-index: 10;
+      }
+
+      .notification {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 16px;
+        z-index: 15;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        text-align: center;
+      }
+
+      @keyframes pulse-trap {
+        0% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 0.3;
+        }
+      }
+
+      @keyframes pulse-exit {
+        0% {
+          opacity: 0.5;
+          transform: scale(0.9);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+        100% {
+          opacity: 0.5;
+          transform: scale(0.9);
+        }
+      }
+
+      @keyframes pulse-powerup {
+        0% {
+          opacity: 0.5;
+          transform: scale(0.9) rotate(0deg);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.1) rotate(180deg);
+        }
+        100% {
+          opacity: 0.5;
+          transform: scale(0.9) rotate(360deg);
+        }
+      }
+
+      @keyframes shake {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        25% {
+          transform: translate(-5px, -5px) rotate(-5deg);
+        }
+        50% {
+          transform: translate(5px, 5px) rotate(5deg);
+        }
+        75% {
+          transform: translate(-5px, 5px) rotate(-5deg);
+        }
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+      }
+
+      .shake {
+        animation: shake 0.5s;
+      }
+
+      .flash {
+        animation: flash 0.5s;
+      }
+
+      @keyframes flash {
+        0% {
+          background-color: rgba(255, 0, 0, 0);
+        }
+        50% {
+          background-color: rgba(255, 0, 0, 0.3);
+        }
+        100% {
+          background-color: rgba(255, 0, 0, 0);
+        }
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        .controls {
+          display: flex;
+          flex-wrap: wrap;
+          width: 180px;
+          justify-content: center;
+        }
+
+        .mini-map {
+          width: 100px;
+          height: 100px;
+          bottom: 100px;
+        }
+      }
